@@ -1,5 +1,5 @@
-obj-m := DnB_driver.o
-DnB_driver-objs := ch_drv.o
+obj-m := char_dev.o
+char_dev-objs := ch_drv.o
 
 PWD = $(shell pwd)
 all:

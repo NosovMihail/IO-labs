@@ -23,14 +23,46 @@ static struct proc_dir_entry *entry;
 char out_result[100];
 
 
-static double my_read(struct file *f, char __user *buf, size_t len,
+static ssize_t my_read(struct file *f, char __user *buf, size_t len,
                          loff_t *off) {
-  int i = 0;
+
+  if (copy_to_user(buf, out_result, sizeof(out_result)) != 0) {
+    return -EFAULT;
+  }
+
+  int count = strlen(out_result);
+  if (*off != count) {
+    *off = count;
+    return count;
+    } else {
+        *off = 0;
+        return 0;
+    }
+
+}
+
+static ssize_t my_write(struct file *f, const char __user *buf, size_t len,
+                          loff_t *off) {
+  if(len>BUFF_SIZE){
+        size_t new_len = len - BUFF_SIZE ;
+        if (copy_from_user(input_buff, buf+BUFF_SIZE, new_len) != 0) {
+            return -EFAULT;
+        }
+        if (copy_from_user(input_buff + new_len, buf, BUFF_SIZE) != 0) {
+        return -EFAULT;
+        }
+}
+  if (copy_from_user(input_buff, buf, len) != 0) {
+    return -EFAULT;
+  }
+  input_char_len += len - 1;
+  printk(KERN_DEBUG "Input characters amount: %ld\n", input_char_len);
+    int i = 0;
   int a = 0;
   int b = 0;
   int operation = 0;
   while(input_buff[i] != '\0'){
-    if((input_buff[i] < 58) and (input_buff[i] > 47)){
+    if((input_buff[i] < 58) && (input_buff[i] > 47)){
     	if(!operation){
     		a = a * 10;
     		a = a + input_buff[i] - 48;
@@ -38,24 +70,23 @@ static double my_read(struct file *f, char __user *buf, size_t len,
     		b = b * 10;
     		b = b + input_buff[i] - 48;
     	}
-    }else if((input_buff[i] == '-') or (input_buff[i] == '+') or (input_buff[i] == '/') or (input_buff[i] == '*')){
+    }else if((input_buff[i] == '-') || (input_buff[i] == '+') || (input_buff[i] == '/') || (input_buff[i] == '*')){
 	operation = input_buff[i];
     }else{
-    	operation = 0;
     	break;
     }
     
     i = i+1;
   } 
   if(operation == 0){
-  	printk(KERN_ERR "Unable to read line. Arguments persed as: %d and %d\n", a, b);
-  	return NULL;
+  	printk(KERN_ERR "Unable to read line. Arguments parsed as: %d and %d\n", a, b);
+  	return -EFAULT;
   }
-  if((b == 0) and (operation == '/')){
+  if((b == 0) && (operation == '/')){
   	printk(KERN_ERR "Dividing by zero");
-  	return NULL;
+  	return -EFAULT;
   }
-  double result = 0;
+  int result = 0;
   switch(operation){
   	case '-':
   		result = a - b;
@@ -70,35 +101,9 @@ static double my_read(struct file *f, char __user *buf, size_t len,
   		result = a / b;
   		break;
   }
-  
-  sprintf(out_result, "%d", result);
-
-  if (copy_to_user(buf, out_result, sizeof(out_result)) != 0) {
-    return -EFAULT;
-  }
-
-
-  return result;
-}
-
-static ssize_t my_write(struct file *f, const char __user *buf, size_t len,
-                          loff_t *off) {
-    if(len>BUFF_SIZE){
-        size_t new_len = len - BUFF_SIZE ;
-        if (copy_from_user(input_buff, buf+BUFF_SIZE, new_len) != 0) {
-            return -EFAULT;
-        }
-        if (copy_from_user(input_buff + new_len, buf, BUFF_SIZE) != 0) {
-        return -EFAULT;
-        }
-    }
-
-  if (copy_from_user(input_buff, buf, len) != 0) {
-    return -EFAULT;
-  }
-  input_char_len += len - 1;
-  printk(KERN_DEBUG "Input characters amount: %ld\n", input_char_len);
-
+  size_t out_len = strlen(out_result);
+  sprintf(out_result+out_len, "%d\n", result);
+  printk(KERN_DEBUG "Answer length must be %ld and i is %d\n", strlen(out_result), i);
   return len;
 }
 
@@ -154,7 +159,7 @@ static int __init ch_drv_init(void) {
     return -1;
   }
 
-  entry = proc_create("var2", 8675, NULL, &proc_fops);
+  entry = proc_create("var2", 0666, NULL, &proc_fops);
   if (entry == NULL) {
     kfree(input_buff);
     device_destroy(cl, first);
@@ -179,12 +184,12 @@ static void __exit ch_drv_exit(void) {
   kfree(input_buff);
   proc_remove(entry);
   printk(KERN_INFO "%s: proc file is deleted\n", THIS_MODULE->name);
-  printk(KERN_INFO "Bye!!!\n");
+  printk(KERN_INFO "See you, space cowboy\n");
 }
 
 module_init(ch_drv_init);
 module_exit(ch_drv_exit);
 
 MODULE_LICENSE("GPL");
-MODULE_AUTHOR("Danila Gorelko, Boris Novoselov");
-MODULE_DESCRIPTION("The first kernel module");
+MODULE_AUTHOR("Nosov Mikhail");
+MODULE_DESCRIPTION("Basic math module");
