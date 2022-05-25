@@ -52,7 +52,7 @@ Total bytes received: 114
 
 sent 5,244,266 bytes  received 114 bytes  10,488,760.00 bytes/sec
 total size is 5,242,880  speedup is 1.00
-
+```
 #### Из памяти в память
 ```
 sudo rsync -av --progress --stats test.txt  /mnt/2/
