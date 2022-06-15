@@ -24,35 +24,8 @@
 
 Результат перехвата в кольцевом буфере
 
-[ 5313.196609] saddr: 192.168.122.135
-[ 5313.196611] daddr: 224.0.0.251
+![image](https://user-images.githubusercontent.com/32123595/173808938-f1dfcef8-4bc0-492a-a9bb-c91bee0f5071.png)
 
 Результат перехвата в файле в /proc
 
-number 0
-saddr: 192.168.122.135
-daddr: 224.0.0.251
-number 1
-saddr: 192.168.122.135
-daddr: 224.0.0.251
-number 2
-saddr: 192.168.122.135
-daddr: 224.0.0.251
-number 3
-saddr: 192.168.122.135
-daddr: 224.0.0.251
-number 4
-saddr: 192.168.122.135
-daddr: 224.0.0.251
-number 5
-saddr: 192.168.122.135
-daddr: 224.0.0.251
-number 6
-saddr: 192.168.122.135
-daddr: 224.0.0.251
-number 7
-saddr: 192.168.122.135
-daddr: 224.0.0.251
-number 8
-saddr: 192.168.122.135
-daddr: 224.0.0.251
+![image](https://user-images.githubusercontent.com/32123595/173808826-94933e7b-ca67-4e37-9a0d-de0c830420be.png)
