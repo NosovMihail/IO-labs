@@ -65,7 +65,7 @@ static char check_frame(struct sk_buff *skb, unsigned char data_shift) {
             strcat(proc_buf, iter_buf);
             printk("size %ld\n", strlen(iter_buf));
 
-            printk("Captured UDP datagram, saddr: %d.%d.%d.%d\n",
+            printk("saddr: %d.%d.%d.%d\n",
                 ntohl(ip->saddr) >> 24, (ntohl(ip->saddr) >> 16) & 0x00FF,
                 (ntohl(ip->saddr) >> 8) & 0x0000FF, (ntohl(ip->saddr)) & 0x000000FF);
             //printk("UDP dest port: %d\n", htons(udp->dest));
@@ -162,8 +162,7 @@ static ssize_t myread(struct file *file, char __user *ubuf, size_t count, loff_t
     return len;
 }
 
-
-static const struct proc_ops proc_fops = {
+static const struct file_operations proc_fops = {
   .read = myread,
 };
 
